@@ -4,6 +4,7 @@
 #include "conio.h"
 #include "stdlib.h"
 #include "windows.h"
+#define  Limit 10
 
 /* 函数声明 */
 void gotoxy(int x,int y);
@@ -24,13 +25,13 @@ float average(int x);
 
 struct singer			//结构体
 {
+	int   age;		//年龄
 	char  ID[15];		//编号
 	char  name[15];		//姓名
 	char  sex [15];		//性别
-	int   age;		//年龄
 	char  tel[15];		//电话
 	float score[5];		//评分
-}player[10];
+}player[Limit];
 
 
 
@@ -129,11 +130,11 @@ void input()//输入数据
 			case '1':
 			{
 				system("cls");
-				printf("\n              ◆请输入要录入的人数(大于0,小于等于10)   ");
+				printf("\n              ◆请输入要录入的人数(大于0,小于等于%d)   ",Limit);
 				scanf("%d",&Num),fflush(stdin);
 				while(1)
 				{
-					if(Num>10||Num<=0)
+					if(Num>Limit||Num<=0)
 					{
 						printf("\n                输入数据不合法，请重新输入!   ");
 						scanf("%d",&Num),fflush(stdin);
@@ -171,10 +172,10 @@ void input()//输入数据
 			case '2':
 			{
 				system("cls");
-				if(Num>=10)
+				if(Num>=Limit)
 				{
 					gotoxy(17,6);
-					printf("歌手信息已满10条，无法继续录入   ");
+					printf("歌手信息已满%d条，无法继续录入   ",Limit);
 					gotoxy(19,10);
 					printf("请按任意键返回主菜单   ");
 					getch(),fflush(stdin);
