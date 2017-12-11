@@ -2,6 +2,7 @@
 #include "stdio.h"
 void main()
 {
+system("mode con cols=75 lines=40");
 printf("quu..__   \n");
 printf(" $$$b  `---.__   \n");
 printf("  \"$$b        `--.                          ___.---uuudP   \n");
