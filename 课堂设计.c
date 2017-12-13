@@ -567,8 +567,8 @@ void save()//保存数据
 	{
 		if(fwrite(&player[i],sizeof(struct singer),1,fp)!=1)
 		{
-			gotoxy(18,14);
-			printf("错误：无法正常保存！请按任意键返回");
+			gotoxy(16,14);
+			printf("错误：%s数据无法保存！请按任意键继续",player[i].name);
 			getch();
 		}
 	}
