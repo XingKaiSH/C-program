@@ -7,7 +7,11 @@
 #define  Limit 10
 
 /* 函数声明 */
-void gotoxy(int x,int y);
+float       average(int x);
+void inputing(int x,int y);
+void   gotoxy(int x,int y);
+void          sheet(int x);
+void    menu();
 void    sign();
 void  finish();
 void   input();
@@ -17,10 +21,10 @@ void    sort();
 void  demand();
 void     del();
 void  search();
-void   sheet();
-void    menu();
+void    save();
+void    load();
+
 int    query();
-float average(int x);
 /* 函数声明 */
 
 struct singer			//结构体
@@ -43,10 +47,26 @@ void main()//main函数
 	sign();
 	while(1)
 	{
-		menu();
+		system("cls");
+		menu(1);
+		gotoxy(30,5);
+		printf("◆ 菜单 ◆");
+		gotoxy(30,8);
+		printf("1.录入数据");
+		gotoxy(30,10);
+		printf("2.显示数据");
+		gotoxy(30,12);
+		printf("3.查找数据");
+		gotoxy(30,14);
+		printf("4.保存数据");
+		gotoxy(30,16);
+		printf("5.读取数据");
+		gotoxy(30,18);
+		printf("0.退出程序");
+		gotoxy(0,0);
 		do
 		{option=getch(),fflush(stdin);}
-		while(option!='1'&&option!='2'&&option!='3'&&option!='0');
+		while(option!='1'&&option!='2'&&option!='3'&&option!='4'&&option!='5'&&option!='0');
 		if(option=='0')
 		{break;}
 		else switch(option)
@@ -57,6 +77,10 @@ void main()//main函数
 			{process();break;}
 			case '3':
 			{search();break;}
+			case '4':
+			{save();break;}
+			case '5':
+			{load();break;}
 		}
 	}
 	finish();
@@ -67,15 +91,15 @@ void main()//main函数
 void sign()//署名
 {
 	system("mode con cols=40 lines=10");
-	gotoxy(4,1);
-	printf("本程序为 《歌手比赛成绩管理系统》");
+	gotoxy(8,1);
+	printf("《歌手比赛成绩管理系统》");
 	gotoxy(7,3);
-	printf("制作人：测控1703班-王思衡");
+	printf("设计者：测控1703班-王思衡");
 	gotoxy(9,5);
-	printf("制作日期：2017年12月");
+	printf("设计日期：2017年12月");
 	gotoxy(11,8);
-	printf("按任意键进入程序");
-	gotoxy(27,8);
+	printf("按任意键进入主菜单");
+	gotoxy(0,0);
 	getch(),fflush(stdin);
 }
 
@@ -108,112 +132,120 @@ void finish()//结束框
 
 void input()//输入数据
 {
-	int i,k;
 	char j;
 	system("cls");
-	gotoxy(25,2);
-	printf("您已选择：录入数据");
-	gotoxy(19,7);
-	printf("按‘1’清空全部数据并重新录入 ");
-	gotoxy(19,10);
-	printf("按‘2’可添加一名新的歌手信息 ");
-	gotoxy(19,17);
-	printf("按‘0’即可返回主菜单     ");
+	menu();
+	gotoxy(25,5);
+	printf("◆您已选择：录入数据");
+	gotoxy(25,9);
+	printf("1.清空数据并重新录入");
+	gotoxy(25,13);
+	printf("2.添加新的歌手信息");
+	gotoxy(25,17);
+	printf("0.返回主菜单");
 	gotoxy(0,0);
-	while(1)
+	do
+	{j=getch(),fflush(stdin);}
+	while(j!='1'&&j!='2'&&j!='0');
+	switch(j)
 	{
-		do
-		{j=getch(),fflush(stdin);}
-		while(j!='1'&&j!='2'&&j!='0');
-		switch(j)
+		case '1':
 		{
-			case '1':
+			do
 			{
 				system("cls");
-				printf("\n              ◆请输入要录入的人数(大于0,小于等于%d)   ",Limit);
+				menu();
+				gotoxy(20,5);
+				printf("◆当前选择：清空数据并重新录入");
+				gotoxy(15,11);
+				printf("请输入要录入的人数(大于等于0,小于等于%d) ",Limit);
+				gotoxy(15,14);
 				scanf("%d",&Num),fflush(stdin);
-				while(1)
-				{
-					if(Num>Limit||Num<=0)
-					{
-						printf("\n                输入数据不合法，请重新输入!   ");
-						scanf("%d",&Num),fflush(stdin);
-					}
-					else
-					{break;}
-				}
-				sheet();
-				for(i=0;i<Num;i++)
-				{
-					gotoxy(2,i*2+3);
-					scanf("%s",player[i].ID),fflush(stdin);
-					gotoxy(13,i*2+3);
-					scanf("%s",player[i].name),fflush(stdin);
-					gotoxy(26,i*2+3);
-					scanf("%s",player[i].sex),fflush(stdin);
-					gotoxy(34,i*2+3);
-					scanf("%d",&player[i].age),fflush(stdin);
-					gotoxy(42,i*2+3);
-					scanf("%s",player[i].tel),fflush(stdin);
-					for(k=0;k<5;k++)
-					{
-						gotoxy(68+7*k,i*2+3);
-						scanf("%f",&player[i].score[k]),fflush(stdin);
-					}
-					gotoxy(106,i*2+3);
-					printf("%.1f",average(i));
-				}
-				gotoxy(34,26);
-				printf("恭喜！录入完成！请按任意键返回主菜单   ");
-				getch(),fflush(stdin);
-				system("cls");
-				break;
 			}
-			case '2':
+			while(Num<0||Num>Limit);
+			inputing(Num,0);
+			break;
+		}
+		case '2':
+		{
+			int i;
+			if(Num>=Limit)
 			{
 				system("cls");
-				if(Num>=Limit)
-				{
-					gotoxy(17,6);
-					printf("歌手信息已满%d条，无法继续录入   ",Limit);
-					gotoxy(19,10);
-					printf("请按任意键返回主菜单   ");
-					getch(),fflush(stdin);
-					break;
-				}
-				printf("\n请输入歌手编号:          ");
-				scanf("%s",player[Num].ID),fflush(stdin);
-				printf("\n请输入歌手姓名:          ");
-				scanf("%s",player[Num].name),fflush(stdin);
-				printf("\n请输入歌手性别:          ");
-				scanf("%s",player[Num].sex),fflush(stdin);
-				printf("\n请输入歌手年龄:          ");
-				scanf("%d",&player[Num].age),fflush(stdin);
-				printf("\n请输入歌手电话号码:      ");
-				scanf("%s",player[Num].tel),fflush(stdin);
-				printf("\n");
-				for(i=0;i<5;i++)
-				{
-					printf("请输入歌手评委 %d 评分:   ",i+1);
-					scanf("%f",&player[Num].score[i]),fflush(stdin);
-				}
-				printf("\n\n恭喜！录入完成！请按任意键返回主菜单 ");
-				Num+=1;
-				gotoxy(0,0);
+				menu(3);
+				gotoxy(20,10);
+				printf("歌手信息已满%d条，无法继续录入   ",Limit);
+				gotoxy(25,15);
+				printf("请按任意键返回主菜单   ");
 				getch(),fflush(stdin);
 				break;
 			}
-			case '0':
-			{break;}
+			else
+			{
+				do
+				{
+					system("cls");
+					menu();
+					gotoxy(20,5);
+					printf("◆当前选择：添加新的歌手信息");
+					gotoxy(15,11);
+					printf("请输入要录入的人数(大于等于0,小于等于%d) ",Limit-Num);
+					gotoxy(15,14);
+					scanf("%d",&i),fflush(stdin);
+				}
+				while(i<0||i>Limit-Num);
+				inputing(i,Num);
+				Num+=i;
+				break;
+			}
 		}
-		break;
+		case '0':
+		{break;}
 	}
+}
+
+void inputing(int x,int y)//输入主体
+{
+	int i,k;
+	float n;
+	sheet(x);
+	for(i=0;i<x;i++)
+	{
+		gotoxy(2,i*2+3);
+		scanf("%s",player[y+i].ID),fflush(stdin);
+		gotoxy(13,i*2+3);
+		scanf("%s",player[y+i].name),fflush(stdin);
+		gotoxy(26,i*2+3);
+		scanf("%s",player[y+i].sex),fflush(stdin);
+		gotoxy(33,i*2+3);
+		scanf("%d",&player[y+i].age),fflush(stdin);
+		gotoxy(42,i*2+3);
+		scanf("%s",player[y+i].tel),fflush(stdin);
+		for(k=0;k<5;k++)
+		{
+			do
+			{
+				gotoxy(68+7*k,i*2+3);
+				printf("    ");
+				gotoxy(68+7*k,i*2+3);
+				scanf("%f",&n),fflush(stdin);
+			}
+			while(n<0||n>10);
+			player[y+i].score[k]=n;
+		}
+		gotoxy(106,i*2+3);
+		printf("%.1f",average(y+i));
+	}
+	gotoxy(40,26);
+	printf("恭喜！录入完成！请按任意键返回主菜单   ");
+	getch(),fflush(stdin);
+	system("cls");
 }
 
 void output()//输出数据
 {
 	int i,j;
-	sheet();
+	sheet(Num);
 	for(i=0;i<Num;i++)
 	{
 		gotoxy(2,i*2+3);
@@ -222,7 +254,7 @@ void output()//输出数据
 		printf("%s",player[i].name);
 		gotoxy(26,i*2+3);
 		printf("%s",player[i].sex);
-		gotoxy(34,i*2+3);
+		gotoxy(33,i*2+3);
 		printf("%d",player[i].age);
 		gotoxy(42,i*2+3);
 		printf("%s",player[i].tel);
@@ -281,7 +313,9 @@ void sort()//数据排序
 
 void demand()//数据修改
 {
-	int i;
+	int i,k;
+	char j;
+	float l;
 	system("cls");
 	output();
 	gotoxy(45,25);
@@ -295,14 +329,93 @@ void demand()//数据修改
 	}
 	else
 	{
-		gotoxy(35,27);
-		printf("您希望修改%s的电话号码，请输入修改后的电话号码：   ",player[i].name);
-		scanf("%s",player[i].tel);
-		gotoxy(45,31);
-		printf("修改成功！按任意键返回");
-		getch(),fflush(stdin);
-	}	
-		process();
+		gotoxy(1,25);
+		printf("请选择修改选项<   1.编号          2.姓名          3.性别          4.电话          5.评分          0.取消   >");
+		do
+		{j=getch(),fflush(stdin);}
+		while(j!='1'&&j!='2'&&j!='3'&&j!='4'&&j!='5'&&j!='0');
+		switch(j)
+		{
+			case '1':
+			{
+				gotoxy(42,28);
+				printf("您希望修改%s的编号，是否确认?(Y/N)     ",player[i].name);
+				do
+				{j=getch(),fflush(stdin);}
+				while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+				if(j=='Y'||j=='y')
+				{
+					gotoxy(47,30);
+					printf("请输入修改后的编号：   ");
+					scanf("%s",player[i].ID);
+				}
+				break;
+			}
+			case '2':
+			{
+				gotoxy(42,28);
+				printf("您希望修改%s的姓名，是否确认?(Y/N)     ",player[i].name);
+				do
+				{j=getch(),fflush(stdin);}
+				while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+				if(j=='Y'||j=='y')
+				{
+					gotoxy(47,30);
+					printf("请输入修改后的姓名：   ");
+					scanf("%s",player[i].name);
+				}
+				break;
+			}
+			case '3':
+			{
+				gotoxy(42,28);
+				printf("您希望修改%s的性别，是否确认?(Y/N)     ",player[i].name);
+				do
+				{j=getch(),fflush(stdin);}
+				while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+				if(j=='Y'||j=='y')
+				{
+					gotoxy(47,30);
+					printf("请输入修改后的性别：   ");
+					scanf("%s",player[i].sex);
+				}
+				break;
+			}
+			case '4':
+			{
+				gotoxy(42,28);
+				printf("您希望修改%s的电话，是否确认?(Y/N)     ",player[i].name);
+				do
+				{j=getch(),fflush(stdin);}
+				while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+				if(j=='Y'||j=='y')
+				{
+					gotoxy(47,30);
+					printf("请输入修改后的电话：   ");
+					scanf("%s",player[i].tel);
+				}
+				break;
+			}
+			case '5':
+			{
+				gotoxy(42,28);
+				printf("您希望修改%s的评分，是否确认?(Y/N)     ",player[i].name);
+				do
+				{j=getch(),fflush(stdin);}
+				while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+				if(j=='Y'||j=='y')
+				{
+					gotoxy(38,30);
+					printf("请输入修改后的评分（格式：评委号，评分）   ");
+					scanf("%d,%f",&k,&l),fflush(stdin);
+					player[i].score[k-1]=l;
+				}
+				break;
+			}
+			case '0':{break;}
+		}
+	}
+	process();
 }
 
 void del()//数据删除
@@ -323,7 +436,7 @@ void del()//数据删除
 	else
 	{
 		gotoxy(40,27);
-		printf("您希望删除%s的所有信息，是否确认?(Y/N)：   ",player[i].name);
+		printf("您希望删除%s的所有信息，是否确认?(Y/N)     ",player[i].name);
 		do
 		{j=getch(),fflush(stdin);}
 		while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
@@ -345,9 +458,6 @@ void del()//数据删除
 				}
 			}
 			Num-=1;
-			gotoxy(45,31);
-			printf("删除成功！按任意键返回");
-			getch(),fflush(stdin);
 		}
 	}
 	process();
@@ -357,12 +467,16 @@ void search()//数据查询
 {
 	int i;
 	system("cls");
-	gotoxy(20,8);
-	printf("请输入待查询的歌手姓名   ");
+	menu();	
+	gotoxy(25,5);
+	printf("◆您已选择：查询数据");
+	gotoxy(24,10);
+	printf("请输入待查询的歌手姓名");
+	gotoxy(24,13);
 	i=query();
 	if(i==-1)
 	{
-		gotoxy(20,12);
+		gotoxy(24,16);
 		printf("查无此人，按任意键退出");
 		getch(),fflush(stdin);
 	}
@@ -388,14 +502,14 @@ void search()//数据查询
 	}
 }
 
-void sheet()//打印表格
+void sheet(int x)//打印表格
 {
 	int i;
 	system("mode con cols=117 lines=33");
 	system("cls");
 	printf("┏----------------------------------------------------------------------------------------------------------------┓\n");
 	printf("┃  编号   |    姓名    | 性别 | 年龄 |     电话号码     |  评分：<  ①  |  ②  |  ③  |  ④  |  ⑤  > | 平均成绩 ┃\n");
-	for(i=0;i<Num;i++)
+	for(i=0;i<x;i++)
 	{
 	printf("┃----------------------------------------------------------------------------------------------------------------┃\n");
 	printf("┃         |            |      |      |                  |        <      |      |      |      |      > |          ┃\n");
@@ -405,28 +519,102 @@ void sheet()//打印表格
 
 void menu()//打印菜单
 {
-	system("mode con cols=70 lines=22");
+	system("mode con cols=70 lines=23");
+	printf("\n                      ◆   歌手比赛成绩管理系统   ◆      \n\n");
 	printf("          **************************************************\n");
-	printf("          *                                  ___   ___     *\n");
-	printf("          *                  ◆ 菜单 ◆     ( @ \\Y/ @ )    *\n");
-	printf("          *                                  \\__+|+__/     *\n");
-	printf("          *                                   {_/ \\_}      *\n");
-	printf("          *                  1.录入数据                    *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                  2.显示数据                    *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                  3.查找数据                    *\n");
 	printf("          *                                                *\n");
 	printf("          *                                                *\n");
 	printf("          *                                                *\n");
-	printf("          *       ____()()   0.退出程序                    *\n");
-	printf("          *      /      @@                                 *\n");
-	printf("          *`~~~~~\\_;m__m._>o                               *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
 	printf("          **************************************************\n");
-	printf("\n             注：排序、修改、删除功能集成在显示数据功能内   ");
-	gotoxy(13,20);
+}
+
+void save()//保存数据
+{
+	FILE *fp;
+	int i;
+	char j;
+	system("cls");
+	menu();
+	gotoxy(20,10);
+	printf("您希望保存数据，是否确认?(Y/N)  ");
+	do
+	{j=getch(),fflush(stdin);}
+	while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+	if(j=='N'||j=='n')
+	return;
+	if((fp=fopen("D:\\information.dat","wb"))==NULL)
+	{
+		gotoxy(18,14);
+		printf("错误：无法正常保存！请按任意键返回");
+		getch();
+		return;
+	}
+	for(i=0;i<Limit;i++)
+	{
+		if(fwrite(&player[i],sizeof(struct singer),1,fp)!=1)
+		{
+			gotoxy(18,14);
+			printf("错误：无法正常保存！请按任意键返回");
+			getch();
+		}
+	}
+	gotoxy(18,14);
+	printf("恭喜，保存数据成功！请按任意键返回");
+	getch();
+	fclose(fp);
+}
+
+void load()//读取数据
+{
+	int i;
+	char j;
+	FILE *fp;
+	system("cls");
+	menu();
+	gotoxy(20,10);
+	printf("您希望读取数据，是否确认?(Y/N)  ");
+	do
+	{j=getch(),fflush(stdin);}
+	while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+	if(j=='N'||j=='n')
+	return;
+	if((fp=fopen("D:\\information.dat","rb"))==NULL)
+	{
+		gotoxy(18,14);
+		printf("错误：无法正常读取！请按任意键返回");
+		getch();
+		return;
+	}
+	for(i=0;i<Limit;i++)
+	{
+		fread(&player[i],sizeof(struct singer),1,fp);
+		if(strcmp(player[i].name,"\0")==0)
+		{break;}
+	}
+/*	for(i=0;i<Limit;i++)
+	{
+		if(strcmp(player[i].name,"\0")==0)
+		{break;}
+	}*/
+	Num=i;
+	gotoxy(18,14);
+	printf("恭喜，读取数据成功！请按任意键返回");
+	getch();
+	fclose(fp);
 }
 
 void gotoxy(int x,int y)//光标移动
@@ -465,4 +653,3 @@ float average(int x)//求平均成绩
 	}
 	return (add-max-min)/3;
 }
-
