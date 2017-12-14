@@ -4,8 +4,8 @@
 #include "conio.h"
 #include "stdlib.h"
 #include "windows.h"
-#define  Limit 10
-
+#define  Limit 50
+/************************************************************************/
 /* 函数声明 */
 float       average(int x);
 void inputing(int x,int y);
@@ -13,7 +13,7 @@ void   gotoxy(int x,int y);
 void          sheet(int x);
 void    menu();
 void    sign();
-void  finish();
+void    quit();
 void   input();
 void  output();
 void process();
@@ -23,10 +23,9 @@ void     del();
 void  search();
 void    save();
 void    load();
-
 int    query();
 /* 函数声明 */
-
+/************************************************************************/
 struct singer			//结构体
 {
 	int   age;		//年龄
@@ -36,11 +35,9 @@ struct singer			//结构体
 	char  tel[15];		//电话
 	float score[5];		//评分
 }player[Limit];
+/************************************************************************/
+int Num=0,Page=1;
 
-
-
-
-int Num=0;
 void main()//main函数
 {
 	char option;
@@ -83,53 +80,10 @@ void main()//main函数
 			{load();break;}
 		}
 	}
-	finish();
+	quit();
 }
 
-
-
-void sign()//署名
-{
-	system("mode con cols=40 lines=10");
-	gotoxy(8,1);
-	printf("《歌手比赛成绩管理系统》");
-	gotoxy(7,3);
-	printf("设计者：测控1703班-王思衡");
-	gotoxy(9,5);
-	printf("设计日期：2017年12月");
-	gotoxy(11,8);
-	printf("按任意键进入主菜单");
-	gotoxy(0,0);
-	getch(),fflush(stdin);
-}
-
-void finish()//结束框
-{
-	system("cls");
-	system("mode con cols=40 lines=20");
-	gotoxy(13,1);
-	printf("感谢您的使用！\n\n");
-	printf("         __..._.-. \n");
-	printf("        /.-.   '-.) \n");
-	printf("        \\',       \\ \n");
-	printf("         |       o'--D\n");
-	printf("         \\      /    |\n");
-	printf("          ;._  _\\ '-/\n");
-	printf("        .'    __ `\\`.-'-. .-'-.\n");
-	printf("      .'    .'  '.|'     '     ',\n");
-	printf("     /      \\     '._,          |\n");
-	printf("    ;        '-._     \\         /\n");
-	printf("   (|           /'-.__/       .'\n");
-	printf("    \\  __     ,'     '-.   .-'\n");
-	printf("     `/  `\\.-'|         '.'\n");
-	printf("      |    |  '-.\n");
-	printf("      |    '-.   )\n");
-	printf("      \\       )-'\n");
-	printf("       '-----' ");
-	gotoxy(27,1);
-	Sleep(3000);
-}
-
+/************************************************************************/
 void input()//输入数据
 {
 	char j;
@@ -157,12 +111,12 @@ void input()//输入数据
 				menu();
 				gotoxy(20,5);
 				printf("◆当前选择：清空数据并重新录入");
-				gotoxy(15,11);
-				printf("请输入要录入的人数(大于等于0,小于等于%d) ",Limit);
+				gotoxy(17,11);
+				printf("请输入要录入的人数(一次最多录入10条) ");
 				gotoxy(15,14);
 				scanf("%d",&Num),fflush(stdin);
 			}
-			while(Num<0||Num>Limit);
+			while(Num<0||Num>10);
 			inputing(Num,0);
 			break;
 		}
@@ -188,12 +142,12 @@ void input()//输入数据
 					menu();
 					gotoxy(20,5);
 					printf("◆当前选择：添加新的歌手信息");
-					gotoxy(15,11);
-					printf("请输入要录入的人数(大于等于0,小于等于%d) ",Limit-Num);
+					gotoxy(17,11);
+					printf("请输入要录入的人数(一次最多录入10条) ");
 					gotoxy(15,14);
 					scanf("%d",&i),fflush(stdin);
 				}
-				while(i<0||i>Limit-Num);
+				while(i<0||i>10);
 				inputing(i,Num);
 				Num+=i;
 				break;
@@ -203,8 +157,7 @@ void input()//输入数据
 		{break;}
 	}
 }
-
-void inputing(int x,int y)//输入主体
+void inputing(int x,int y)
 {
 	int i,k;
 	float n;
@@ -241,57 +194,95 @@ void inputing(int x,int y)//输入主体
 	getch(),fflush(stdin);
 	system("cls");
 }
-
-void output()//输出数据
-{
-	int i,j;
-	sheet(Num);
-	for(i=0;i<Num;i++)
-	{
-		gotoxy(2,i*2+3);
-		printf("%s",player[i].ID);
-		gotoxy(13,i*2+3);
-		printf("%s",player[i].name);
-		gotoxy(26,i*2+3);
-		printf("%s",player[i].sex);
-		gotoxy(33,i*2+3);
-		printf("%d",player[i].age);
-		gotoxy(42,i*2+3);
-		printf("%s",player[i].tel);
-		for(j=0;j<5;j++)
-		{
-			gotoxy(68+7*j,i*2+3);
-			printf("%.1f",player[i].score[j]);
-		}
-		gotoxy(106,i*2+3);
-		printf("%.1f",average(i));
-	}
-}
-
+/************************************************************************/
 void process()//数据处理
 {
 	char j;
-	output();
-	gotoxy(17,27);
-	printf("<   1.数据排序           2.数据修改          3.数据删除          0.结束浏览   >");
-	gotoxy(43,25);
-	printf("按对应数字键执行对应操作");
-	do
-	{j=getch(),fflush(stdin);}
-	while(j!='1'&&j!='2'&& j!='3'&&j!='0');
-	switch(j)
+	int p;
+	if(Num%10==0)
+	{p=Num/10;}
+	else
+	{p=Num/10+1;}
+	while(1)
 	{
-		case '1':
-		{sort();break;}
-		case '2':
-		{demand();break;}
-		case '3':
-		{del();break;}
-		case '0':
+		output();
+		gotoxy(17,27);
+		printf("<   1.数据排序           2.数据修改          3.数据删除          0.结束浏览   >");
+		gotoxy(45,25);
+		printf("按对应数字键执行对应操作");
+		do
+		{j=getch(),fflush(stdin);}
+		while(j!='1'&&j!='2'&& j!='3'&&j!='0'&&j!='a'&&j!='A'&&j!='d'&&j!='D');
+		if(j=='0')
 		{break;}
+		switch(j)
+		{
+			case '1':
+			{sort();break;}
+			case '2':
+			{demand();break;}
+			case '3':
+			{del();break;}
+			case 'a':case 'A':
+			{
+				if(Page>1)
+				{Page-=1;}
+				break;
+			}
+			case 'd':case 'D':
+			{
+				if(Page<p)
+				{Page+=1;}
+				break;
+			}
+		}
+	}
+	Page=1;
+}
+/************************************************************************/
+void output()//输出数据
+{
+	int i,j,k,p,q,x;
+	if(Num%10==0)
+	{p=Num/10;q=1;}
+	else
+	{p=Num/10+1;q=0;}
+	if(Page<p)
+	{x=10;}
+	else if(Page==p)
+	{
+		if(q==1)
+		{x=10;}
+		if(q==0)
+		{x=Num%10;}
+	}
+	else if(Page>p)
+	{x=0;}
+	sheet(x);
+	gotoxy(45,23);
+	printf("按A/D翻页（当前页数： %d）",Page);
+	for(i=(Page-1)*10,k=0;i<(Page-1)*10+x;i++,k++)
+	{
+		gotoxy(2,k*2+3);
+		printf("%s",player[i].ID);
+		gotoxy(13,k*2+3);
+		printf("%s",player[i].name);
+		gotoxy(26,k*2+3);
+		printf("%s",player[i].sex);
+		gotoxy(33,k*2+3);
+		printf("%d",player[i].age);
+		gotoxy(42,k*2+3);
+		printf("%s",player[i].tel);
+		for(j=0;j<5;j++)
+		{
+			gotoxy(68+7*j,k*2+3);
+			printf("%.1f",player[i].score[j]);
+		}
+		gotoxy(106,k*2+3);
+		printf("%.1f",average(i));
 	}
 }
-
+/************************************************************************/
 void sort()//数据排序
 {
 	int i,j;
@@ -308,9 +299,8 @@ void sort()//数据排序
 			}
 		}
 	}
-	process();
 }
-
+/************************************************************************/
 void demand()//数据修改
 {
 	int i,k;
@@ -415,9 +405,8 @@ void demand()//数据修改
 			case '0':{break;}
 		}
 	}
-	process();
 }
-
+/************************************************************************/
 void del()//数据删除
 {
 	int i,k;
@@ -460,9 +449,23 @@ void del()//数据删除
 			Num-=1;
 		}
 	}
-	process();
 }
-
+/************************************************************************/
+void sheet(int x)//打印表格
+{
+	int i;
+	system("mode con cols=117 lines=33");
+	system("cls");
+	printf("┏----------------------------------------------------------------------------------------------------------------┓\n");
+	printf("┃  编号   |    姓名    | 性别 | 年龄 |     电话号码     |  评分：<  ①  |  ②  |  ③  |  ④  |  ⑤  > | 平均成绩 ┃\n");
+	for(i=0;i<x;i++)
+	{
+	printf("┃----------------------------------------------------------------------------------------------------------------┃\n");
+	printf("┃         |            |      |      |                  |        <      |      |      |      |      > |          ┃\n");
+	}
+	printf("┗----------------------------------------------------------------------------------------------------------------┛\n");
+}
+/************************************************************************/
 void search()//数据查询
 {
 	int i;
@@ -502,47 +505,7 @@ void search()//数据查询
 		getchar(),fflush(stdin);
 	}
 }
-
-void sheet(int x)//打印表格
-{
-	int i;
-	system("mode con cols=117 lines=33");
-	system("cls");
-	printf("┏----------------------------------------------------------------------------------------------------------------┓\n");
-	printf("┃  编号   |    姓名    | 性别 | 年龄 |     电话号码     |  评分：<  ①  |  ②  |  ③  |  ④  |  ⑤  > | 平均成绩 ┃\n");
-	for(i=0;i<x;i++)
-	{
-	printf("┃----------------------------------------------------------------------------------------------------------------┃\n");
-	printf("┃         |            |      |      |                  |        <      |      |      |      |      > |          ┃\n");
-	}
-	printf("┗----------------------------------------------------------------------------------------------------------------┛\n");
-}
-
-void menu()//打印菜单
-{
-	system("mode con cols=70 lines=23");
-	printf("\n                      ◆   歌手比赛成绩管理系统   ◆      \n\n");
-	printf("          **************************************************\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          *                                                *\n");
-	printf("          **************************************************\n");
-}
-
+/************************************************************************/
 void save()//保存数据
 {
 	FILE *fp;
@@ -578,7 +541,7 @@ void save()//保存数据
 	getch();
 	fclose(fp);
 }
-
+/************************************************************************/
 void load()//读取数据
 {
 	int i;
@@ -612,7 +575,7 @@ void load()//读取数据
 	getch();
 	fclose(fp);
 }
-
+/************************************************************************/
 void gotoxy(int x,int y)//光标移动
 {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -621,7 +584,7 @@ void gotoxy(int x,int y)//光标移动
     pos.Y = y;
     SetConsoleCursorPosition(handle,pos);
 }
-
+/************************************************************************/
 int query()//姓名检索
 {
 	char name[15];
@@ -634,7 +597,7 @@ int query()//姓名检索
 	}
 	return -1;
 }
-
+/************************************************************************/
 float average(int x)//求平均成绩
 {
 	int i=0;
@@ -648,4 +611,71 @@ float average(int x)//求平均成绩
 		{min=player[x].score[i];}
 	}
 	return (add-max-min)/3;
+}
+/************************************************************************/
+void sign()//署名
+{
+	system("mode con cols=40 lines=10");
+	gotoxy(8,1);
+	printf("《歌手比赛成绩管理系统》");
+	gotoxy(7,3);
+	printf("设计者：测控1703班-王思衡");
+	gotoxy(9,5);
+	printf("设计日期：2017年12月");
+	gotoxy(11,8);
+	printf("按任意键进入主菜单");
+	gotoxy(0,0);
+	getch(),fflush(stdin);
+}
+/************************************************************************/
+void quit()//结束
+{
+	system("cls");
+	system("mode con cols=40 lines=20");
+	gotoxy(13,1);
+	printf("感谢您的使用！\n\n");
+	printf("         __..._.-. \n");
+	printf("        /.-.   '-.) \n");
+	printf("        \\',       \\ \n");
+	printf("         |       o'--D\n");
+	printf("         \\      /    |\n");
+	printf("          ;._  _\\ '-/\n");
+	printf("        .'    __ `\\`.-'-. .-'-.\n");
+	printf("      .'    .'  '.|'     '     ',\n");
+	printf("     /      \\     '._,          |\n");
+	printf("    ;        '-._     \\         /\n");
+	printf("   (|           /'-.__/       .'\n");
+	printf("    \\  __     ,'     '-.   .-'\n");
+	printf("     `/  `\\.-'|         '.'\n");
+	printf("      |    |  '-.\n");
+	printf("      |    '-.   )\n");
+	printf("      \\       )-'\n");
+	printf("       '-----' ");
+	gotoxy(27,1);
+	Sleep(3000);
+}
+/************************************************************************/
+void menu()//打印菜单
+{
+	system("mode con cols=70 lines=23");
+	printf("\n                      ◆   歌手比赛成绩管理系统   ◆      \n\n");
+	printf("          **************************************************\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          *                                                *\n");
+	printf("          **************************************************\n");
 }
