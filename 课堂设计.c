@@ -482,8 +482,9 @@ void search()//数据查询
 	}
 	else
 	{
+		system("mode con cols=40 lines=25");
 		system("cls");
-		printf("以下为该歌手的全部信息\n\n");
+		printf("         以下为该歌手的全部信息\n\n");
 		printf("编号:        %s\n\n",player[i].ID);
 		printf("姓名:        %s\n\n",player[i].name);
 		printf("性别:        %s\n\n",player[i].sex);
@@ -497,7 +498,7 @@ void search()//数据查询
 		printf("④:          %.1f\n",player[i].score[3]);
 		printf("⑤:          %.1f\n",player[i].score[4]);
 		printf("﹀\n");
-		printf("平均成绩：   %.1f          请按‘Enter’键退出   ",average(i));
+		printf("平均成绩：   %.1f          \n\n\n          请按‘Enter’键退出   ",average(i));
 		getchar(),fflush(stdin);
 	}
 }
@@ -605,11 +606,6 @@ void load()//读取数据
 		if(strcmp(player[i].name,"\0")==0)
 		{break;}
 	}
-/*	for(i=0;i<Limit;i++)
-	{
-		if(strcmp(player[i].name,"\0")==0)
-		{break;}
-	}*/
 	Num=i;
 	gotoxy(18,14);
 	printf("恭喜，读取数据成功！请按任意键返回");
