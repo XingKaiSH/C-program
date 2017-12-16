@@ -206,6 +206,8 @@ void process()//数据处理
 	while(1)
 	{
 		output();
+		gotoxy(45,23);
+		printf("按A/D翻页（当前页数： %d）",Page);
 		gotoxy(17,27);
 		printf("<   1.数据排序           2.数据修改          3.数据删除          0.结束浏览   >");
 		gotoxy(45,25);
@@ -259,8 +261,6 @@ void output()//输出数据
 	else if(Page>p)
 	{x=0;}
 	sheet(x);
-	gotoxy(45,23);
-	printf("按A/D翻页（当前页数： %d）",Page);
 	for(i=(Page-1)*10,k=0;i<(Page-1)*10+x;i++,k++)
 	{
 		gotoxy(2,k*2+3);
