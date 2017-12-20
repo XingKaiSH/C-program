@@ -11,6 +11,7 @@ float       average(int x);
 void inputing(int x,int y);
 void   gotoxy(int x,int y);
 void          sheet(int x);
+int           query(int y);
 void    menu();
 void    sign();
 void    quit();
@@ -23,7 +24,6 @@ void     del();
 void  search();
 void    save();
 void    load();
-int    query();
 /* 函数声明 */
 /************************************************************************/
 struct singer			//结构体
@@ -310,20 +310,18 @@ void demand()//数据修改
 	output();
 	gotoxy(45,25);
 	printf("请输入待修改的歌手姓名   ");
-	i=query();
-	if(i==-1)
+	i=query(1);
+	if(i==0)
 	{
-		gotoxy(45,27);
-		printf("查无此人，按任意键退出");
-		getch(),fflush(stdin);
+		return;
 	}
 	else
 	{
 		gotoxy(1,25);
-		printf("请选择修改选项<   1.编号          2.姓名          3.性别          4.电话          5.评分          0.取消   >");
+		printf("请选择修改选项<   1.编号        2.姓名        3.性别        4.年龄        5.电话        6.评分        0.取消   >");
 		do
 		{j=getch(),fflush(stdin);}
-		while(j!='1'&&j!='2'&&j!='3'&&j!='4'&&j!='5'&&j!='0');
+		while(j!='1'&&j!='2'&&j!='3'&&j!='4'&&j!='5'&&j!='6'&&j!='0');
 		switch(j)
 		{
 			case '1':
@@ -374,6 +372,21 @@ void demand()//数据修改
 			case '4':
 			{
 				gotoxy(42,28);
+				printf("您希望修改%s的年龄，是否确认?(Y/N)     ",player[i].name);
+				do
+				{j=getch(),fflush(stdin);}
+				while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
+				if(j=='Y'||j=='y')
+				{
+					gotoxy(47,30);
+					printf("请输入修改后的年龄：   ");
+					scanf("%d",player[i].age);
+				}
+				break;
+			}
+			case '5':
+			{
+				gotoxy(42,28);
 				printf("您希望修改%s的电话，是否确认?(Y/N)     ",player[i].name);
 				do
 				{j=getch(),fflush(stdin);}
@@ -386,7 +399,7 @@ void demand()//数据修改
 				}
 				break;
 			}
-			case '5':
+			case '6':
 			{
 				gotoxy(42,28);
 				printf("您希望修改%s的评分，是否确认?(Y/N)     ",player[i].name);
@@ -415,12 +428,10 @@ void del()//数据删除
 	output();
 	gotoxy(45,25);
 	printf("请输入待删除信息的歌手姓名   ");
-	i=query();
-	if(i==-1)
+	i=query(1);
+	if(i==0)
 	{
-		gotoxy(47,27);
-		printf("查无此人，按任意键退出");
-		getch(),fflush(stdin);
+		return ;
 	}
 	else
 	{
@@ -468,41 +479,18 @@ void sheet(int x)//打印表格
 /************************************************************************/
 void search()//数据查询
 {
-	int i;
 	system("cls");
 	menu();	
 	gotoxy(25,5);
 	printf("◆您已选择：查询数据");
 	gotoxy(24,10);
 	printf("请输入待查询的歌手姓名");
-	gotoxy(24,13);
-	i=query();
-	if(i==-1)
+	gotoxy(24,12);	
+	if(query(0))
 	{
-		gotoxy(24,16);
-		printf("查无此人，按任意键退出");
-		getch(),fflush(stdin);
-	}
-	else
-	{
-		system("mode con cols=40 lines=25");
-		system("cls");
-		printf("         以下为该歌手的全部信息\n\n");
-		printf("编号:        %s\n\n",player[i].ID);
-		printf("姓名:        %s\n\n",player[i].name);
-		printf("性别:        %s\n\n",player[i].sex);
-		printf("年龄:        %d\n\n",player[i].age);
-		printf("电话号码:    %s\n\n",player[i].tel);
-		printf("评委评分:\n");
-		printf("︿\n");
-		printf("①:          %.1f\n",player[i].score[0]);
-		printf("②:          %.1f\n",player[i].score[1]);
-		printf("③:          %.1f\n",player[i].score[2]);
-		printf("④:          %.1f\n",player[i].score[3]);
-		printf("⑤:          %.1f\n",player[i].score[4]);
-		printf("﹀\n");
-		printf("平均成绩：   %.1f          \n\n\n          请按‘Enter’键退出   ",average(i));
-		getchar(),fflush(stdin);
+	gotoxy(50,27);
+	printf("按任意键退出");
+	getch();
 	}
 }
 /************************************************************************/
@@ -510,7 +498,7 @@ void save()//保存数据
 {
 	FILE *fp;
 	int i;
-	char j;
+	char j,address[20];
 	system("cls");
 	menu();
 	gotoxy(20,10);
@@ -520,9 +508,13 @@ void save()//保存数据
 	while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
 	if(j=='N'||j=='n')
 	return;
-	if((fp=fopen("D:\\information.dat","wb"))==NULL)
+	gotoxy(26,12);
+	printf("请输入保存文件名：");
+	gotoxy(20,14);
+	gets(address);
+	if((fp=fopen(address,"wb"))==NULL)
 	{
-		gotoxy(18,14);
+		gotoxy(18,16);
 		printf("错误：无法正常保存！请按任意键返回");
 		getch();
 		return;
@@ -531,7 +523,7 @@ void save()//保存数据
 	{
 		if(fwrite(&player[i],sizeof(struct singer),1,fp)!=1)
 		{
-			gotoxy(16,14);
+			gotoxy(16,16);
 			printf("错误：%s数据无法保存！请按任意键继续",player[i].name);
 			getch();
 		}
@@ -545,7 +537,7 @@ void save()//保存数据
 void load()//读取数据
 {
 	int i;
-	char j;
+	char j,address[20];
 	FILE *fp;
 	system("cls");
 	menu();
@@ -556,7 +548,11 @@ void load()//读取数据
 	while(j!='Y'&&j!='y'&&j!='N'&&j!='n');
 	if(j=='N'||j=='n')
 	return;
-	if((fp=fopen("D:\\information.dat","rb"))==NULL)
+	gotoxy(26,12);
+	printf("请输入读取文件名：");
+	gotoxy(20,14);
+	gets(address);
+	if((fp=fopen(address,"rb"))==NULL)
 	{
 		gotoxy(18,14);
 		printf("错误：无法正常读取！请按任意键返回");
@@ -585,17 +581,82 @@ void gotoxy(int x,int y)//光标移动
     SetConsoleCursorPosition(handle,pos);
 }
 /************************************************************************/
-int query()//姓名检索
+int query(int y)//姓名检索
 {
-	char name[15];
-	int i;
+	int i=0,j,k,l,x,flag[Limit]={0};
+	char name[15],id[15];
 	gets(name),fflush(stdin);
-	for(i=0;i<Num;i++)
+	for(x=0;x<Num;x++)
 	{
-		if(strcmp(name,player[i].name)==0)
-		{return i;}
+		if(strcmp(name,player[x].name)==0)
+		{
+			flag[x]=1;
+			i++;
+			l=x;
+		}
 	}
-	return -1;
+	if(i==0)
+	{	
+		sheet(0);
+		gotoxy(47,27);
+		printf("查无此人，按任意键退出");
+		getch(),fflush(stdin);
+		return 0;
+	}
+	else
+	{
+		sheet(i);
+		for(x=0,k=0;x<Num;x++)
+		{
+			if(flag[x])
+			{
+				gotoxy(2,k*2+3);
+				printf("%s",player[x].ID);
+				gotoxy(13,k*2+3);
+				printf("%s",player[x].name);
+				gotoxy(26,k*2+3);
+				printf("%s",player[x].sex);
+				gotoxy(33,k*2+3);
+				printf("%d",player[x].age);
+				gotoxy(42,k*2+3);
+				printf("%s",player[x].tel);
+				for(j=0;j<5;j++)
+				{
+					gotoxy(68+7*j,k*2+3);
+					printf("%.1f",player[x].score[j]);
+				}
+				gotoxy(106,k*2+3);
+				printf("%.1f",average(x));
+				k++;
+			}
+		}
+	}
+	if(y)
+	{
+		if(i==1)
+		return l;
+		if(i>1)
+		{
+			gotoxy(46,23);
+			printf("查有重名，请输入编号");
+			do
+			{	
+				gotoxy(46,24);
+				printf("                             ");
+				gotoxy(46,24);
+				gets(id),fflush(stdin);
+				for(x=0;x<Num;x++)
+				{
+					if(strcmp(id,player[x].ID)==0)
+					return x;
+				}
+			}
+			while(1);
+		}
+	}
+	else
+	return 1;
+	return 1;
 }
 /************************************************************************/
 float average(int x)//求平均成绩
