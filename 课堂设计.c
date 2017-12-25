@@ -4,7 +4,6 @@
 #include "conio.h"
 #include "stdlib.h"
 #include "windows.h"
-#define  Limit 50
 /************************************************************************/
 /* 函数声明 */
 float       average(int x);
@@ -34,9 +33,10 @@ struct singer			//结构体
 	char  sex [15];		//性别
 	char  tel[15];		//电话
 	float score[5];		//评分
-}player[Limit];
+};
 /************************************************************************/
 int Num=0,Page=1;
+struct singer *player=NULL;
 
 void main()//main函数
 {
@@ -117,39 +117,39 @@ void input()//输入数据
 				scanf("%d",&Num),fflush(stdin);
 			}
 			while(Num<0||Num>10);
+			free(player);
+			player=calloc(Num,sizeof(struct singer));
 			inputing(Num,0);
 			break;
 		}
 		case '2':
 		{
 			int i;
-			if(Num>=Limit)
+			do
 			{
 				system("cls");
-				menu(3);
-				gotoxy(20,10);
-				printf("歌手信息已满%d条，无法继续录入   ",Limit);
-				gotoxy(25,15);
-				printf("请按任意键返回主菜单   ");
-				getch(),fflush(stdin);
+				menu();
+				gotoxy(20,5);
+				printf("◆当前选择：添加新的歌手信息");
+				gotoxy(17,11);
+				printf("请输入要录入的人数(一次最多录入10条) ");
+				gotoxy(15,14);
+				scanf("%d",&i),fflush(stdin);
+			}
+			while(i<0||i>10);
+			if(Num)
+			{
+				player=(struct singer *)realloc(player,(Num+i)*sizeof(struct singer));
+				inputing(i,Num);
+				Num+=i;
 				break;
 			}
 			else
 			{
-				do
-				{
-					system("cls");
-					menu();
-					gotoxy(20,5);
-					printf("◆当前选择：添加新的歌手信息");
-					gotoxy(17,11);
-					printf("请输入要录入的人数(一次最多录入10条) ");
-					gotoxy(15,14);
-					scanf("%d",&i),fflush(stdin);
-				}
-				while(i<0||i>10);
-				inputing(i,Num);
-				Num+=i;
+				free(player);
+				player=calloc(i,sizeof(struct singer));
+				inputing(i,0);
+				Num=i;
 				break;
 			}
 		}
@@ -199,12 +199,12 @@ void process()//数据处理
 {
 	char j;
 	int p;
-	if(Num%10==0)
-	{p=Num/10;}
-	else
-	{p=Num/10+1;}
 	while(1)
 	{
+		if(Num%10==0)
+		{p=Num/10;}
+		else
+		{p=Num/10+1;}
 		output();
 		gotoxy(45,23);
 		printf("按A/D翻页（当前页数： %d）",Page);
@@ -311,7 +311,7 @@ void demand()//数据修改
 	gotoxy(45,25);
 	printf("请输入待修改的歌手姓名   ");
 	i=query(1);
-	if(i==0)
+	if(i==-1)
 	{
 		return;
 	}
@@ -380,7 +380,7 @@ void demand()//数据修改
 				{
 					gotoxy(47,30);
 					printf("请输入修改后的年龄：   ");
-					scanf("%d",player[i].age);
+					scanf("%d",&player[i].age);
 				}
 				break;
 			}
@@ -429,7 +429,7 @@ void del()//数据删除
 	gotoxy(45,25);
 	printf("请输入待删除信息的歌手姓名   ");
 	i=query(1);
-	if(i==0)
+	if(i==-1)
 	{
 		return ;
 	}
@@ -458,6 +458,7 @@ void del()//数据删除
 				}
 			}
 			Num-=1;
+			player=(struct singer *)realloc(player,Num*sizeof(struct singer));
 		}
 	}
 }
@@ -486,7 +487,7 @@ void search()//数据查询
 	gotoxy(24,10);
 	printf("请输入待查询的歌手姓名");
 	gotoxy(24,12);	
-	if(query(0))
+	if(query(0)==1)
 	{
 	gotoxy(50,27);
 	printf("按任意键退出");
@@ -519,7 +520,8 @@ void save()//保存数据
 		getch();
 		return;
 	}
-	for(i=0;i<Limit;i++)
+	fwrite(&Num,sizeof(int),1,fp);
+	for(i=0;i<Num;i++)
 	{
 		if(fwrite(&player[i],sizeof(struct singer),1,fp)!=1)
 		{
@@ -559,13 +561,22 @@ void load()//读取数据
 		getch();
 		return;
 	}
-	for(i=0;i<Limit;i++)
+	if(Num)
+	{
+		fread(&Num,sizeof(int),1,fp);
+		player=(struct singer *)realloc(player,Num*sizeof(struct singer));
+	}
+	else
+	{
+		fread(&Num,sizeof(int),1,fp);
+		player =calloc(Num,sizeof(struct singer));
+	}
+	for(i=0;;i++)
 	{
 		fread(&player[i],sizeof(struct singer),1,fp);
 		if(strcmp(player[i].name,"\0")==0)
 		{break;}
 	}
-	Num=i;
 	gotoxy(18,14);
 	printf("恭喜，读取数据成功！请按任意键返回");
 	getch();
@@ -583,14 +594,13 @@ void gotoxy(int x,int y)//光标移动
 /************************************************************************/
 int query(int y)//姓名检索
 {
-	int i=0,j,k,l,x,flag[Limit]={0};
+	int i=0,j,k,l,x;
 	char name[15],id[15];
 	gets(name),fflush(stdin);
 	for(x=0;x<Num;x++)
 	{
 		if(strcmp(name,player[x].name)==0)
 		{
-			flag[x]=1;
 			i++;
 			l=x;
 		}
@@ -601,14 +611,14 @@ int query(int y)//姓名检索
 		gotoxy(47,27);
 		printf("查无此人，按任意键退出");
 		getch(),fflush(stdin);
-		return 0;
+		return -1;
 	}
 	else
 	{
 		sheet(i);
 		for(x=0,k=0;x<Num;x++)
 		{
-			if(flag[x])
+			if(strcmp(name,player[x].name)==0)
 			{
 				gotoxy(2,k*2+3);
 				printf("%s",player[x].ID);
