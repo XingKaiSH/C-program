@@ -124,7 +124,7 @@ void move()//小蛇移动相关
 		nheady=oheady+1;
 		direct1=direct;
 	}
-	else//输入不合规矩的方向的情况
+	else//发生输入不合规矩的方向的情况
 	{
 		direct=direct1;
 		if(direct=='w')
